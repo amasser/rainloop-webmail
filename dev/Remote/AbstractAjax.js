@@ -161,6 +161,12 @@ class AbstractAjaxRemote {
 				cached = pInt(oData.Time) > new window.Date().getTime() - start;
 			}
 
+			if (oData && oData.UpdateToken) {
+				if (GlobalsData.__APP__ && GlobalsData.__APP__.setClientSideToken) {
+					GlobalsData.__APP__.setClientSideToken(oData.UpdateToken);
+				}
+			}
+
 			if (action && this.oRequests[action]) {
 				if (this.oRequests[action].__aborted) {
 					sType = 'abort';
@@ -219,40 +225,6 @@ class AbstractAjaxRemote {
 	 */
 	noop(fCallback) {
 		this.defaultRequest(fCallback, 'Noop');
-	}
-
-	/**
-	 * @param {?Function} fCallback
-	 * @param {string} sMessage
-	 * @param {string} sFileName
-	 * @param {number} iLineNo
-	 * @param {string} sLocation
-	 * @param {string} sHtmlCapa
-	 * @param {number} iTime
-	 */
-	jsError(fCallback, sMessage, sFileName, iLineNo, sLocation, sHtmlCapa, iTime) {
-		this.defaultRequest(fCallback, 'JsError', {
-			'Message': sMessage,
-			'FileName': sFileName,
-			'LineNo': iLineNo,
-			'Location': sLocation,
-			'HtmlCapa': sHtmlCapa,
-			'TimeOnPage': iTime
-		});
-	}
-
-	/**
-	 * @param {?Function} fCallback
-	 * @param {string} sType
-	 * @param {Array=} mData = null
-	 * @param {boolean=} bIsError = false
-	 */
-	jsInfo(fCallback, sType, mData, bIsError = false) {
-		this.defaultRequest(fCallback, 'JsInfo', {
-			'Type': sType,
-			'Data': mData,
-			'IsError': bIsError ? '1' : '0'
-		});
 	}
 
 	/**

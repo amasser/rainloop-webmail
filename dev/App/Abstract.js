@@ -9,7 +9,6 @@ import {
 	$win,
 	$html,
 	$doc,
-	startMicrotime,
 	leftPanelDisabled,
 	leftPanelType,
 	sUserAgent,
@@ -17,16 +16,7 @@ import {
 	bAnimationSupported
 } from 'Common/Globals';
 
-import {
-	noop,
-	isNormal,
-	pString,
-	inArray,
-	microtime,
-	timestamp,
-	detectDropdownVisibility,
-	windowResizeCallback
-} from 'Common/Utils';
+import { isNormal, pString, detectDropdownVisibility, windowResizeCallback } from 'Common/Utils';
 
 import { KeyState, Magics } from 'Common/Enums';
 import { root, rootAdmin, rootUser, populateAuthSuffix } from 'Common/Links';
@@ -45,7 +35,7 @@ class AbstractApp extends AbstractBoot {
 	/**
 	 * @param {RemoteStorage|AdminRemoteStorage} Remote
 	 */
-	constructor(Remote) {
+	constructor() {
 		super();
 
 		this.googlePreviewSupportedCache = null;
@@ -54,33 +44,6 @@ class AbstractApp extends AbstractBoot {
 		this.lastErrorTime = 0;
 
 		this.iframe = $('<iframe class="internal-hiddden" />').appendTo('body');
-
-		$win.on('error', (event) => {
-			if (
-				event &&
-				event.originalEvent &&
-				event.originalEvent.message &&
-				-1 ===
-					inArray(event.originalEvent.message, ['Script error.', 'Uncaught Error: Error calling method on NPObject.'])
-			) {
-				const time = timestamp();
-				if (this.lastErrorTime >= time) {
-					return;
-				}
-
-				this.lastErrorTime = time;
-
-				Remote.jsError(
-					noop,
-					event.originalEvent.message,
-					event.originalEvent.filename,
-					event.originalEvent.lineno,
-					window.location && window.location.toString ? window.location.toString() : '',
-					$html.attr('class'),
-					microtime() - startMicrotime
-				);
-			}
-		});
 
 		$win.on('resize', () => {
 			Events.pub('window.resize');
